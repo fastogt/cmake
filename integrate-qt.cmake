@@ -314,7 +314,7 @@ ELSEIF(UNIX OR MINGW)
     #eliminate symlinks
         FOREACH(dllsToCopy ${DLIBS_TO_COPY})		
             GET_FILENAME_COMPONENT(name ${dllsToCopy} NAME)
-            STRING(REGEX REPLACE "[^5]+$" "" lnname ${name})
+            STRING(REGEX REPLACE "[^so]+$" ".5" lnname ${name})
             INSTALL(FILES ${dllsToCopy} DESTINATION ${LIB_DIST} CONFIGURATIONS ${TYPE} COMPONENT QTLIBS RENAME ${lnname})
         ENDFOREACH(dllsToCopy ${DLIBS_TO_COPY})
     ENDIF()
