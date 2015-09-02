@@ -64,70 +64,16 @@ MACRO(DEPLOY_QT_PLUGIN PLUGIN_PATH PATH_WHERE_SEARCH LIB_DIST)
 ENDMACRO(DEPLOY_QT_PLUGIN)
 
 MACRO(DETECT_QT)
-    FIND_PACKAGE( Qt5Core QUIET )
-    IF(Qt5Core_FOUND)
-            SET(DEVELOPER_QT5 1)
-    ELSE(Qt5Core_FOUND)
-            SET(DEVELOPER_QT5 0)
-    ENDIF(Qt5Core_FOUND)
+    FIND_PACKAGE(Qt5Core REQUIRED)
 ENDMACRO(DETECT_QT)
 
-MACRO(QTX_WRAP_CPP)
-    IF(DEVELOPER_QT5)
-        QT5_WRAP_CPP(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_WRAP_CPP(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_WRAP_CPP)
-
-MACRO(QTX_GENERATE_MOC)
-    IF(DEVELOPER_QT5)
-        QT5_GENERATE_MOC(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_GENERATE_MOC(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_GENERATE_MOC)
-
-MACRO(QTX_ADD_TRANSLATION)
-    IF(DEVELOPER_QT5)
-       QT5_ADD_TRANSLATION(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_ADD_TRANSLATION(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_ADD_TRANSLATION)
-
-MACRO(QTX_CREATE_TRANSLATION)
-    IF(DEVELOPER_QT5)
-        QT5_CREATE_TRANSLATION(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_CREATE_TRANSLATION(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_CREATE_TRANSLATION)
-
-MACRO(QTX_WRAP_UI)
-    IF(DEVELOPER_QT5)
-        QT5_WRAP_UI(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_WRAP_UI(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_WRAP_UI)
-
-MACRO(QTX_ADD_RESOURCES)
-    IF(DEVELOPER_QT5)
-        QT5_ADD_RESOURCES(${ARGN})
-    ELSE(DEVELOPER_QT5)
-        QT4_ADD_RESOURCES(${ARGN})
-    ENDIF(DEVELOPER_QT5)
-ENDMACRO(QTX_ADD_RESOURCES)
-
 MACRO(INTEGRATE_QT)
-QUERY_QMAKE(QT_INSTALL_PLUGINS QT_PLUGINS_DIR)
-QUERY_QMAKE(QT_INSTALL_BINS QT_BINS_DIR)
-QUERY_QMAKE(QT_INSTALL_LIBS QT_LIBS_DIR)
+    QUERY_QMAKE(QT_INSTALL_PLUGINS QT_PLUGINS_DIR)
+    QUERY_QMAKE(QT_INSTALL_BINS QT_BINS_DIR)
+    QUERY_QMAKE(QT_INSTALL_LIBS QT_LIBS_DIR)
 
-MESSAGE(STATUS "QT_PLUGINS_DIR=${QT_PLUGINS_DIR}, QT_BINS_DIR=${QT_BINS_DIR}, QT_LIBS_DIR=${QT_LIBS_DIR}")
+    MESSAGE(STATUS "QT_PLUGINS_DIR=${QT_PLUGINS_DIR}, QT_BINS_DIR=${QT_BINS_DIR}, QT_LIBS_DIR=${QT_LIBS_DIR}")
 
-IF(DEVELOPER_QT5)
     SET(USE_QT_DYNAMIC ON)
     SET(QT_COMPONENTS_TO_USE ${ARGV})
 
@@ -141,7 +87,7 @@ IF(DEVELOPER_QT5)
         ELSE()
             FIND_PACKAGE(${qtComponent} QUIET)
         ENDIF()
-    
+
         # Add the include directories for the Qt 5 module to
         # the compile lines.
         INCLUDE_DIRECTORIES(${${qtComponent}_INCLUDE_DIRS})
@@ -152,7 +98,7 @@ IF(DEVELOPER_QT5)
         # Add compiler flags for building executables (-fPIE)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${qtComponent}_EXECUTABLE_COMPILE_FLAGS}")
 
-        #STRING(REGEX REPLACE "Qt5" "" COMPONENT_SHORT_NAME ${qtComponent})		
+        #STRING(REGEX REPLACE "Qt5" "" COMPONENT_SHORT_NAME ${qtComponent})
         #set(QT_MODULES_TO_USE ${QT_MODULES_TO_USE} ${COMPONENT_SHORT_NAME})
 
         IF(${${qtComponent}_FOUND})
@@ -162,64 +108,6 @@ IF(DEVELOPER_QT5)
             ENDIF()
         ENDIF()
     ENDFOREACH(qtComponent ${QT_COMPONENTS_TO_USE})
-ELSE(DEVELOPER_QT5)
-    SET(QT_COMPONENTS_TO_USE ${ARGV})
-    # repeat this for every debug/optional package
-    LIST(FIND QT_COMPONENTS_TO_USE "QtScriptTools" QT_SCRIPT_TOOLS_INDEX)
-    IF(NOT ${QT_SCRIPT_TOOLS_INDEX} EQUAL -1)
-        LIST(REMOVE_ITEM QT_COMPONENTS_TO_USE "QtScriptTools")
-        SET(QT_DEBUG_COMPONENTS_TO_USE ${QT_DEBUG_COMPONENTS_TO_USE} "QtScriptTools")
-    ENDIF()
-    IF(DEVELOPER_BUILD_TESTS)
-        SET(QT_COMPONENTS_TO_USE ${QT_COMPONENTS_TO_USE} QtTest)
-    ENDIF(DEVELOPER_BUILD_TESTS)
-    FIND_PACKAGE(Qt4 COMPONENTS ${QT_COMPONENTS_TO_USE} REQUIRED)
-    FIND_PACKAGE(Qt4 COMPONENTS ${QT_DEBUG_COMPONENTS_TO_USE} QUIET)
-    IF(NOT QT_QTSCRIPTTOOLS_FOUND)
-        ADD_DEFINITIONS(-DQT_NO_SCRIPTTOOLS)
-    ENDIF()
-    INCLUDE(${QT_USE_FILE})
-    SET(QT_3RDPARTY_DIR ${QT_BINARY_DIR}/../src/3rdparty)
-
-	#checking is Qt dynamic or statis version will be used
-    GET_FILENAME_COMPONENT(QTCORE_DLL_NAME_WE ${QT_QTCORE_LIBRARY_RELEASE} NAME_WE)
-    GET_FILENAME_COMPONENT(QT_LIB_PATH ${QT_QTCORE_LIBRARY_RELEASE} PATH)
-
-    IF(WIN32)
-        SET(DLL_EXT dll)
-    # message("searching ${QTCORE_DLL_NAME_WE}.${DLL_EXT} in " ${QT_LIB_PATH} ${QT_LIB_PATH}/../bin)
-        FIND_FILE(QTCORE_DLL_FOUND_PATH ${QTCORE_DLL_NAME_WE}.${DLL_EXT} PATHS ${QT_LIB_PATH} ${QT_LIB_PATH}/../bin
-            NO_DEFAULT_PATH
-            NO_CMAKE_ENVIRONMENT_PATH
-            NO_CMAKE_PATH
-            NO_SYSTEM_ENVIRONMENT_PATH
-            NO_CMAKE_SYSTEM_PATH
-            )
-            MESSAGE("QTCORE_DLL_FOUND_PATH=" ${QTCORE_DLL_FOUND_PATH})
-            IF(EXISTS ${QTCORE_DLL_FOUND_PATH})
-                SET(USE_QT_DYNAMIC ON)
-            ELSE(EXISTS ${QTCORE_DLL_FOUND_PATH})
-                SET(USE_QT_DYNAMIC OFF)
-            ENDIF(EXISTS ${QTCORE_DLL_FOUND_PATH})
-    ELSE()
-        SET(USE_QT_DYNAMIC ON)
-    ENDIF(WIN32)
-    # use jscore
-    IF(MSVC AND NOT USE_QT_DYNAMIC)
-        FIND_LIBRARY(JSCORE_LIB_RELEASE jscore
-            PATHS
-            ${QT_3RDPARTY_DIR}/webkit/Source/JavaScriptCore/release
-            ${QT_3RDPARTY_DIR}/webkit/JavaScriptCore/release
-            )
-        FIND_LIBRARY(JSCORE_LIB_DEBUG NAMES jscored jscore
-            PATHS
-            ${QT_3RDPARTY_DIR}/webkit/Source/JavaScriptCore/debug
-            ${QT_3RDPARTY_DIR}/webkit/JavaScriptCore/debug
-            )
-    SET(JSCORE_LIBS optimized ${JSCORE_LIB_RELEASE} debug ${JSCORE_LIB_DEBUG} )
-    ENDIF(MSVC AND NOT USE_QT_DYNAMIC)
-	# end of use jscore
-ENDIF(DEVELOPER_QT5)
     SETUP_COMPILER_SETTINGS(${USE_QT_DYNAMIC})
 ENDMACRO(INTEGRATE_QT)
 
@@ -227,74 +115,28 @@ ENDMACRO(INTEGRATE_QT)
 ##############################################################################
 
 MACRO(INSTALL_QT TARGET_NAME LIB_DIST)
-IF(NOT DEVELOPER_QT5)
-    IF(WIN32 OR APPLE)
-        SET(QT_COMPONENTS_TO_USE ${ARGV})
-        LIST(REMOVE_ITEM QT_COMPONENTS_TO_USE ${TARGET_NAME})
-        FIND_PACKAGE(Qt4 COMPONENTS ${QT_COMPONENTS_TO_USE} REQUIRED)
-        FIND_PACKAGE(Qt4 COMPONENTS ${QT_DEBUG_COMPONENTS_TO_USE} QUIET)
-        INCLUDE(${QT_USE_FILE})
-        GET_TARGET_PROPERTY(targetLocation ${TARGET_NAME} LOCATION)
-        GET_FILENAME_COMPONENT(targetDir ${targetLocation} PATH)
-        
-        IF(WIN32)
-            SET(REPLACE_IN_LIB ".lib" ".dll")
-            SET(REPLACE_IN_LIB2 "/lib/([^/]+)$" "/bin/\\1")
-        ELSEIF(APPLE)
-            SET(REPLACE_IN_LIB ".a" ".dylib")
-            SET(REPLACE_IN_LIB2 "" "")
-        ENDIF()
-
-        FOREACH(qtComponent ${QT_COMPONENTS_TO_USE} ${QT_DEBUG_COMPONENTS_TO_USE})
-            STRING(TOUPPER "${qtComponent}" QtComCap)
-            TARGET_LINK_LIBRARIES(${TARGET_NAME} ${QT_${QtComCap}_LIBRARY})
-            IF(NOT ${qtComponent} STREQUAL "QtMain")
-                STRING(REPLACE ${REPLACE_IN_LIB} dllNameDeb "${QT_${QtComCap}_LIBRARY_DEBUG}")
-                IF(WIN32)
-                    STRING(REGEX REPLACE ${REPLACE_IN_LIB2} dllNameDeb ${dllNameDeb})
-                ENDIF()
-                SET(DLIBS_TO_COPY_DEBUG ${DLIBS_TO_COPY_DEBUG} ${dllNameDeb})
-                IF(NOT ${qtComponent} STREQUAL "QtScriptTools")
-                    STRING(REPLACE ${REPLACE_IN_LIB} dllNameRel "${QT_${QtComCap}_LIBRARY_RELEASE}")
-                    IF(WIN32)
-                        STRING(REGEX REPLACE ${REPLACE_IN_LIB2} dllNameRel ${dllNameRel})
-                    ENDIF()
-                    SET(DLIBS_TO_COPY_RELEASE ${DLIBS_TO_COPY_RELEASE} ${dllNameRel})
-                ENDIF()
-                # TODO: check this code @ MAC and *ux
-                ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD COMMAND
-                    ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:
-                    ${dllNameDeb}> $<$<NOT:$<CONFIG:Debug>>:
-                    ${dllNameRel}>  $<TARGET_FILE_DIR:${TARGET_NAME}>
-                    )
-            ENDIF(NOT ${qtComponent} STREQUAL "QtMain")
-        ENDFOREACH(qtComponent ${QT_COMPONENTS_TO_USE})
-    ENDIF(WIN32 OR APPLE)
-ELSE()# Qt5
-    LIST(FIND QT_COMPONENTS_TO_USE "Qt5Xml" QT_XML_INDEX)
-    IF(NOT ${QT_XML_INDEX} EQUAL -1)
-        GET_TARGET_PROPERTY(libLocation ${Qt5Xml_LIBRARIES} LOCATION)
-        STRING(REGEX REPLACE "Xml" "XmlPatterns" libLocation ${libLocation})
-        QT_ADD_TO_INSTALL(${TARGET_NAME} ${libLocation} "")
+LIST(FIND QT_COMPONENTS_TO_USE "Qt5Xml" QT_XML_INDEX)
+IF(NOT ${QT_XML_INDEX} EQUAL -1)
+    GET_TARGET_PROPERTY(libLocation ${Qt5Xml_LIBRARIES} LOCATION)
+    STRING(REGEX REPLACE "Xml" "XmlPatterns" libLocation ${libLocation})
+    QT_ADD_TO_INSTALL(${TARGET_NAME} ${libLocation} "")
+ENDIF()
+FOREACH(qtComponent ${QT_COMPONENTS_TO_USE} ${QT_DEBUG_COMPONENTS_TO_USE})
+    IF(NOT ${qtComponent} STREQUAL "Qt5LinguistTools")
+        IF(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
+            GET_TARGET_PROPERTY(libLocation ${${qtComponent}_LIBRARIES} LOCATION)
+            QT_ADD_TO_INSTALL(${TARGET_NAME} ${libLocation} "")
+        ELSE(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
+            MESSAGE("Canont find library ${qtComponent}_LIBRARIES")
+        ENDIF(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
     ENDIF()
-    FOREACH(qtComponent ${QT_COMPONENTS_TO_USE} ${QT_DEBUG_COMPONENTS_TO_USE})
-        IF(NOT ${qtComponent} STREQUAL "Qt5LinguistTools")
-            IF(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
-                GET_TARGET_PROPERTY(libLocation ${${qtComponent}_LIBRARIES} LOCATION)
-                QT_ADD_TO_INSTALL(${TARGET_NAME} ${libLocation} "")
-            ELSE(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
-                MESSAGE("Canont find library ${qtComponent}_LIBRARIES")
-            ENDIF(NOT "${${qtComponent}_LIBRARIES}" STREQUAL "")
-        ENDIF()
-    ENDFOREACH(qtComponent ${QT_COMPONENTS_TO_USE} ${QT_DEBUG_COMPONENTS_TO_USE})
-    IF(UNIX AND NOT APPLE)
-        #Qt5XcbQpa
-        FIND_LIBRARY(Qt5XcbQpa_LIBRARIES NAMES Qt5XcbQpa PATHS "${QT_LIBS_DIR}" NO_DEFAULT_PATH)
-        GET_FILENAME_COMPONENT(LibWithoutSymLink ${Qt5XcbQpa_LIBRARIES} REALPATH)
-        QT_ADD_TO_INSTALL(${TARGET_NAME} ${LibWithoutSymLink} "")
-    ENDIF(UNIX AND NOT APPLE)
-ENDIF(NOT DEVELOPER_QT5)
-
+ENDFOREACH(qtComponent ${QT_COMPONENTS_TO_USE} ${QT_DEBUG_COMPONENTS_TO_USE})
+IF(UNIX AND NOT APPLE)
+    #Qt5XcbQpa
+    FIND_LIBRARY(Qt5XcbQpa_LIBRARIES NAMES Qt5XcbQpa PATHS "${QT_LIBS_DIR}" NO_DEFAULT_PATH)
+    GET_FILENAME_COMPONENT(LibWithoutSymLink ${Qt5XcbQpa_LIBRARIES} REALPATH)
+    QT_ADD_TO_INSTALL(${TARGET_NAME} ${LibWithoutSymLink} "")
+ENDIF(UNIX AND NOT APPLE)
 MESSAGE(STATUS "Qt libs to install ${DLIBS_TO_COPY_RELEASE}")
 IF(MSVC)
     # Visual studio install
