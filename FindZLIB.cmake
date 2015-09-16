@@ -71,7 +71,6 @@ endif()
 set(_ZLIB_SEARCH_NORMAL
   PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]"
         "$ENV{PROGRAMFILES}/zlib"
-        "$ENV{MSYS_ROOT}/mingw64"
   )
 list(APPEND _ZLIB_SEARCHES _ZLIB_SEARCH_NORMAL)
 
