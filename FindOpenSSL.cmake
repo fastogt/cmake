@@ -70,6 +70,7 @@ else ()
     ${OPENSSL_ROOT_DIR}
     ENV OPENSSL_ROOT_DIR
     /usr/local/ssl
+    /usr/local/opt/openssl
     )
 endif ()
 
