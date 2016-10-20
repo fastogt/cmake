@@ -20,3 +20,15 @@ MACRO(VersionConf prjName from_file to_file iconname)
   )
   ADD_DEPENDENCIES(${prjName} VersionConf)
 ENDMACRO(VersionConf)
+
+MACRO(CREATE_DOCS target config_path out_path)
+  FIND_PACKAGE(Doxygen)
+  IF(DOXYGEN_FOUND)
+    CONFIGURE_FILE(${config_path} ${out_path} @ONLY)
+    ADD_CUSTOM_TARGET(generate_doc_for_${target}
+      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+  ENDIF(DOXYGEN_FOUND)
+ENDMACRO(CREATE_DOCS)
