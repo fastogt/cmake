@@ -59,6 +59,12 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+IF(ZLIB_USE_STATIC)
+  MESSAGE(STATUS "ZLIB_USE_STATIC: ON")
+ELSE()
+  MESSAGE(STATUS "ZLIB_USE_STATIC: OFF")
+ENDIF(ZLIB_USE_STATIC)
+
 set(_ZLIB_SEARCHES)
 
 # Search ZLIB_ROOT first if it is set.
@@ -74,7 +80,11 @@ set(_ZLIB_SEARCH_NORMAL
   )
 list(APPEND _ZLIB_SEARCHES _ZLIB_SEARCH_NORMAL)
 
-set(ZLIB_NAMES z zlib zdll zlib1 zlibd zlibd1)
+IF(ZLIB_USE_STATIC)
+  set(ZLIB_NAMES libz.a libzlib.a libzdll.a libzlib1.a libzlibd.a libzlibd1.a)
+ELSE()
+  set(ZLIB_NAMES z zlib zdll zlib1 zlibd zlibd1)
+ENDIF(ZLIB_USE_STATIC)
 
 # Try each search configuration.
 foreach(search ${_ZLIB_SEARCHES})
