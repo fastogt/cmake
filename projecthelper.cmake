@@ -110,6 +110,9 @@ MACRO(DEFINE_DEFAULT_DEFINITIONS)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables")
   # -fvisibility-inlines-hidden -fno-threadsafe-statics -fno-rtti
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
+  IF(CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
+  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO(DEFINE_DEFAULT_DEFINITIONS)
 
 MACRO(INSTALL_RUNTIME_LIBRARIES)
