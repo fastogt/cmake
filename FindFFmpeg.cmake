@@ -45,6 +45,16 @@ NAMES avformat
 PATHS ${_FFMPEG_AVFORMAT_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
 )
 
+find_library(FFMPEG_LIBAVFILTER
+NAMES avfilter
+PATHS ${_FFMPEG_AVFORMAT_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+)
+
+find_library(FFMPEG_LIBAVDEVICE
+NAMES avdevice
+PATHS ${_FFMPEG_AVFORMAT_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+)
+
 find_library(FFMPEG_LIBAVUTIL
 NAMES avutil
 PATHS ${_FFMPEG_AVUTIL_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
@@ -59,6 +69,8 @@ set(FFMPEG_INCLUDE_DIR ${FFMPEG_AVCODEC_INCLUDE_DIR})
 
 set(FFMPEG_LIBRARIES
 ${FFMPEG_LIBAVFORMAT}
+${FFMPEG_LIBAVFILTER}
+${FFMPEG_LIBAVDEVICE}
 ${FFMPEG_LIBAVCODEC}
 ${FFMPEG_LIBAVUTIL}
 )
