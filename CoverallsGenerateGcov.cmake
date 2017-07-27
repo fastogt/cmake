@@ -165,12 +165,14 @@ macro(get_source_path_from_gcov_filename _SRC_FILENAME _GCOV_FILENAME)
 	# /path/to/project/root/build/#path#to#project#root#subdir#the_file.c.gcov
 	# ->
 	# #path#to#project#root#subdir#the_file.c.gcov
-	get_filename_component(_GCOV_FILENAME_WEXT ${_GCOV_FILENAME} NAME)
+  get_filename_component(_GCOV_FILENAME_WEXT ${_GCOV_FILENAME} NAME)
 
 	# #path#to#project#root#subdir#the_file.c.gcov -> /path/to/project/root/subdir/the_file.c
 	string(REGEX REPLACE "\\.gcov$" "" SRC_FILENAME_TMP ${_GCOV_FILENAME_WEXT})
+  string(REGEX REPLACE "\\^" ".." SRC_FILENAME_TMP ${SRC_FILENAME_TMP})
 	string(REGEX REPLACE "\#" "/" SRC_FILENAME_TMP ${SRC_FILENAME_TMP})
-	set(${_SRC_FILENAME} "${SRC_FILENAME_TMP}")
+  get_filename_component(SRC_FILENAME_TMP_ABSOLUTE ${SRC_FILENAME_TMP} ABSOLUTE)
+  set(${_SRC_FILENAME} "${SRC_FILENAME_TMP_ABSOLUTE}")
 endmacro()
 
 ##############################################################################
