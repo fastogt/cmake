@@ -5,38 +5,35 @@
 #  SNAPPY_LIBRARIES   - List of libraries when using snappy.
 #  SNAPPY_FOUND       - True if snappy found.
 
-find_path(SNAPPY_INCLUDE_DIR snappy.h NO_DEFAULT_PATH PATHS
+IF(SNAPPY_USE_STATIC)
+  MESSAGE(STATUS "SNAPPY_USE_STATIC: ON")
+ELSE()
+  MESSAGE(STATUS "SNAPPY_USE_STATIC: OFF")
+ENDIF(SNAPPY_USE_STATIC)
+
+FIND_PATH(SNAPPY_INCLUDE_DIR snappy.h PATHS
   ${HT_DEPENDENCY_INCLUDE_DIR}
   /usr/include
   /opt/local/include
   /usr/local/include
 )
+IF(SNAPPY_USE_STATIC)
+  SET(SNAPPY_NAMES ${SNAPPY_NAMES} libsnappy.a)
+ELSE()
+  SET(SNAPPY_NAMES ${SNAPPY_NAMES} snappy)
+ENDIF()
 
-set(SNAPPY_NAMES ${SNAPPY_NAMES} snappy)
-find_library(SNAPPY_LIBRARY NAMES ${SNAPPY_NAMES} NO_DEFAULT_PATH PATHS
-    ${HT_DEPENDENCY_LIB_DIR}
-    /usr/local/lib
-    /opt/local/lib
-    /usr/lib
-    )
+FIND_LIBRARY(SNAPPY_LIBRARIES NAMES ${SNAPPY_NAMES} PATHS
+  ${HT_DEPENDENCY_LIB_DIR}
+  /usr/local/lib
+  /opt/local/lib
+  /usr/lib
+)
 
-if (SNAPPY_INCLUDE_DIR AND SNAPPY_LIBRARY)
-  set(SNAPPY_FOUND TRUE)
-  set( SNAPPY_LIBRARIES ${SNAPPY_LIBRARY} )
-else ()
-  set(SNAPPY_FOUND FALSE)
-  set( SNAPPY_LIBRARIES )
-endif ()
-
-if (SNAPPY_FOUND)
-  message(STATUS "Found Snappy: ${SNAPPY_LIBRARY}")
-else ()
-  message(STATUS "Not Found Snappy: ${SNAPPY_LIBRARY}")
-  if (SNAPPY_FIND_REQUIRED)
-    message(STATUS "Looked for Snappy libraries named ${SNAPPY_NAMES}.")
-    message(FATAL_ERROR "Could NOT find Snappy library")
-  endif ()
-endif ()
-
-mark_as_advanced(SNAPPY_LIBRARY SNAPPY_INCLUDE_DIR)
-
+# handle the QUIETLY and REQUIRED arguments and set SNAPPY_FOUND to TRUE if
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Snappy
+                                  REQUIRED_VARS SNAPPY_LIBRARIES SNAPPY_INCLUDE_DIR
+                                  VERSION_VAR SNAPPY_VERSION_STRING)
+MARK_AS_ADVANCED(SNAPPY_INCLUDE_DIR)
