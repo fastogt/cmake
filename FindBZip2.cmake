@@ -35,37 +35,33 @@ ELSE()
   MESSAGE(STATUS "BZIP2_USE_STATIC: OFF")
 ENDIF(BZIP2_USE_STATIC)
 
-set(_BZIP2_PATHS PATHS
-  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Bzip2;InstallPath]"
-  )
+SET(_BZIP2_PATHS PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Bzip2;InstallPath]")
 
-find_path(BZIP2_INCLUDE_DIR bzlib.h ${_BZIP2_PATHS} PATH_SUFFIXES include)
+FIND_PATH(BZIP2_INCLUDE_DIR bzlib.h ${_BZIP2_PATHS} PATH_SUFFIXES include)
 
-if (NOT BZIP2_LIBRARIES)
 IF(BZIP2_USE_STATIC)
-    find_library(BZIP2_LIBRARY NAMES libbz2.a libbzip2.a ${_BZIP2_PATHS} PATH_SUFFIXES lib)
-    set(BZIP2_LIBRARIES ${BZIP2_LIBRARY})
+  FIND_LIBRARY(BZIP2_LIBRARY NAMES libbz2.a libbzip2.a ${_BZIP2_PATHS} PATH_SUFFIXES lib)
+  SET(BZIP2_LIBRARIES ${BZIP2_LIBRARY})
 ELSE()
-    find_library(BZIP2_LIBRARY NAMES bz2 bzip2 ${_BZIP2_PATHS} PATH_SUFFIXES lib)
-    set(BZIP2_LIBRARIES ${BZIP2_LIBRARY})
+  FIND_LIBRARY(BZIP2_LIBRARY NAMES bz2 bzip2 ${_BZIP2_PATHS} PATH_SUFFIXES lib)
+  SET(BZIP2_LIBRARIES ${BZIP2_LIBRARY})
 ENDIF(BZIP2_USE_STATIC)
-endif ()
 
-if (BZIP2_INCLUDE_DIR AND EXISTS "${BZIP2_INCLUDE_DIR}/bzlib.h")
-    file(STRINGS "${BZIP2_INCLUDE_DIR}/bzlib.h" BZLIB_H REGEX "bzip2/libbzip2 version [0-9]+\\.[^ ]+ of [0-9]+ ")
-    string(REGEX REPLACE ".* bzip2/libbzip2 version ([0-9]+\\.[^ ]+) of [0-9]+ .*" "\\1" BZIP2_VERSION_STRING "${BZLIB_H}")
-endif ()
+IF(BZIP2_INCLUDE_DIR AND EXISTS "${BZIP2_INCLUDE_DIR}/bzlib.h")
+  FILE(STRINGS "${BZIP2_INCLUDE_DIR}/bzlib.h" BZLIB_H REGEX "bzip2/libbzip2 version [0-9]+\\.[^ ]+ of [0-9]+ ")
+  STRING(REGEX REPLACE ".* bzip2/libbzip2 version ([0-9]+\\.[^ ]+) of [0-9]+ .*" "\\1" BZIP2_VERSION_STRING "${BZLIB_H}")
+ENDIF()
 
 # handle the QUIETLY and REQUIRED arguments and set BZip2_FOUND to TRUE if
 # all listed variables are TRUE
-include(FindPackageHandleStandardArgs)
+INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(BZip2
                                   REQUIRED_VARS BZIP2_LIBRARIES BZIP2_INCLUDE_DIR
                                   VERSION_VAR BZIP2_VERSION_STRING)
 
-if (BZIP2_FOUND)
-   include(CheckLibraryExists)
-   CHECK_LIBRARY_EXISTS("${BZIP2_LIBRARIES}" BZ2_bzCompressInit "" BZIP2_NEED_PREFIX)
-endif ()
+IF(BZIP2_FOUND)
+  INCLUDE(CheckLibraryExists)
+  CHECK_LIBRARY_EXISTS("${BZIP2_LIBRARIES}" BZ2_bzCompressInit "" BZIP2_NEED_PREFIX)
+ENDIF()
 
-mark_as_advanced(BZIP2_INCLUDE_DIR)
+MARK_AS_ADVANCED(BZIP2_INCLUDE_DIR)
