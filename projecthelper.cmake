@@ -241,3 +241,20 @@ ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME} POST_BUILD
   COMMAND ${CMAKE_STRIP} --strip-unneeded $<TARGET_FILE:${TARGET_NAME}>
   COMMENT "Stripping target: ${TARGET_NAME}" VERBATIM)
 ENDFUNCTION(STRIP_TARGET)
+
+FUNCTION(GEN_START_SCRIPT FILE_NAME TARGET_NAME)
+FILE(WRITE ${FILE_NAME} "#!/usr/bin/env bash
+
+SOURCE=\"\${BASH_SOURCE[0]}\"
+while [ -h \"$SOURCE\" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR=\"$( cd -P \"$( dirname \"$SOURCE\" )\" && pwd )\"
+  SOURCE=\"$(readlink \"$SOURCE\")\"
+  [[ $SOURCE != /* ]] && SOURCE=\"$DIR/$SOURCE\" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SOURCE_DIR=\"$( cd -P \"$( dirname \"$SOURCE\" )\" && pwd )\"
+cd $SOURCE_DIR
+
+export LD_LIBRARY_PATH=\"$SOURCE_DIR/../lib:$LD_LIBRARY_PATH\"
+
+\"$SOURCE_DIR/${TARGET_NAME}\" $@")
+ENDFUNCTION(GEN_START_SCRIPT)
