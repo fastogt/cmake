@@ -1,7 +1,7 @@
 # - Find Snappy 
 # Find the snappy compression library and includes
 #
-#  SNAPPY_INCLUDE_DIR - where to find snappy.h, etc.
+#  SNAPPY_INCLUDE_DIRS - where to find snappy.h, etc.
 #  SNAPPY_LIBRARIES   - List of libraries when using snappy.
 #  SNAPPY_FOUND       - True if snappy found.
 
@@ -11,7 +11,7 @@ ELSE()
   MESSAGE(STATUS "SNAPPY_USE_STATIC: OFF")
 ENDIF(SNAPPY_USE_STATIC)
 
-FIND_PATH(SNAPPY_INCLUDE_DIR snappy.h PATHS
+FIND_PATH(SNAPPY_INCLUDE_DIRS snappy.h PATHS
   ${HT_DEPENDENCY_INCLUDE_DIR}
   /usr/include
   /opt/local/include
@@ -34,6 +34,6 @@ FIND_LIBRARY(SNAPPY_LIBRARIES NAMES ${SNAPPY_NAMES} PATHS
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Snappy
-                                  REQUIRED_VARS SNAPPY_LIBRARIES SNAPPY_INCLUDE_DIR
+                                  REQUIRED_VARS SNAPPY_LIBRARIES SNAPPY_INCLUDE_DIRS
                                   VERSION_VAR SNAPPY_VERSION_STRING)
-MARK_AS_ADVANCED(SNAPPY_INCLUDE_DIR)
+MARK_AS_ADVANCED(SNAPPY_INCLUDE_DIRS)
