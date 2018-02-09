@@ -12,7 +12,6 @@ ELSE()
 ENDIF(SNAPPY_USE_STATIC)
 
 FIND_PATH(SNAPPY_INCLUDE_DIRS snappy.h PATHS
-  ${HT_DEPENDENCY_INCLUDE_DIR}
   /usr/include
   /opt/local/include
   /usr/local/include
@@ -24,7 +23,6 @@ ELSE()
 ENDIF()
 
 FIND_LIBRARY(SNAPPY_LIBRARIES NAMES ${SNAPPY_NAMES} PATHS
-  ${HT_DEPENDENCY_LIB_DIR}
   /usr/local/lib
   /opt/local/lib
   /usr/lib
