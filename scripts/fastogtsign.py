@@ -10,6 +10,7 @@ import subprocess as sp
 SIGN_EXTENSIONS = ['.so', '.dylib']  # extension-less binaries are auto-included
 CODE_SIGN_OPTS = ['--verbose', '--force', '--sign']
 
+
 def get_os() -> str:
     uname_str = platform.system()
     if 'MINGW' in uname_str:
@@ -28,6 +29,7 @@ def get_os() -> str:
         return 'android'
     else:
         return 'unknown'
+
 
 def is_translations(path):
     ext = os.path.splitext(path)[1]
@@ -77,6 +79,7 @@ def code_sign_nested_macosx(identity, path, dryrun):
     try:
         for bin in signables:
             print(cmd(['codesign'] + CODE_SIGN_OPTS + [identity, bin]))
+        print(cmd(['codesign'] + CODE_SIGN_OPTS + [identity, path]))
     except sp.CalledProcessError:
         print('Code signing failed.')
         exit(1)
