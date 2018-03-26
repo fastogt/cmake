@@ -95,7 +95,7 @@ def main():
     if os_name == 'macosx':
         code_sign_nested_macosx(cs_identity, app_path, dryrun=(sys.argv[1] == 'list'))
     else:
-        print('Please implement code sign for: %s' % os_name)
+        print('Please implement code sign for: {0}, application path: {1}'.format(os_name, app_path))
 
 
 if __name__ == '__main__':
