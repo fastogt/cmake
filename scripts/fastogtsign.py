@@ -70,30 +70,30 @@ def get_signable_files(path):
     return sorted(mapped_sign, reverse=True)
 
 
-def code_sign_nested_macosx(identity, path, dryrun):
+def code_sign_nested_macosx(identity, path):
     signables = get_signable_files(path)
     if len(signables) == 0:
         print("No signable binaries found.")
         return False
-    cmd = sp.check_output if not dryrun else lambda x: ' '.join(x)
     try:
         for bin in signables:
-            print(cmd(['codesign'] + CODE_SIGN_OPTS + [identity, bin]))
-        print(cmd(['codesign'] + CODE_SIGN_OPTS + [identity, path]))
+            print(sp.check_output(['codesign'] + CODE_SIGN_OPTS + [identity, bin], universal_newlines=True))
+        print(sp.check_output(['codesign'] + CODE_SIGN_OPTS + [identity, path], universal_newlines=True))
     except sp.CalledProcessError:
         print('Code signing failed.')
         exit(1)
-    print('%s successfully complete.' % ('Code signing' if not dryrun else 'Dry run'))
+    print('Code signing successfully complete.')
 
 
 def main():
-    if (len(sys.argv) != 4) or (sys.argv[1] not in ('sign', 'list')):
-        print('Usage: %s sign/list signing_identity app_path' % os.path.basename(__file__))
+    if (len(sys.argv) != 3):
+        print('Usage: %s signing_identity app_path' % os.path.basename(__file__))
         exit(1)
-    cs_identity, app_path = sys.argv[2:]
+    cs_identity, app_path = sys.argv[1:]
     os_name = get_os()
+    print('Start signing path: {0}'.format(app_path))
     if os_name == 'macosx':
-        code_sign_nested_macosx(cs_identity, app_path, dryrun=(sys.argv[1] == 'list'))
+        code_sign_nested_macosx(cs_identity, app_path)
     else:
         print('Please implement code sign for: {0}, application path: {1}'.format(os_name, app_path))
 
