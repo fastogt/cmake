@@ -4,11 +4,24 @@
 Code-signs all nested binaries inside an app bundle (excluding the app itself).
 '''
 
-import os, sys, re, platform
-import subprocess as sp
+import os, sys, re, platform, subprocess
 
 SIGN_EXTENSIONS = ['.so', '.dylib']  # extension-less binaries are auto-included
 CODE_SIGN_OPTS = ['--verbose', '--force', '--sign']
+
+
+def run_command(cmd: list):
+    try:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        for output in process.stdout:
+            line = output.strip()
+            print(line.decode("utf-8"))
+            sys.stdout.flush()
+        rc = process.poll()
+    except subprocess.CalledProcessError as ex:
+        raise ex
+
+    return rc
 
 
 def get_os() -> str:
@@ -77,9 +90,9 @@ def code_sign_nested_macosx(identity, path):
         return False
     try:
         for bin in signables:
-            print(sp.check_output(['codesign'] + CODE_SIGN_OPTS + [identity, bin], universal_newlines=True))
-        print(sp.check_output(['codesign'] + CODE_SIGN_OPTS + [identity, path], universal_newlines=True))
-    except sp.CalledProcessError:
+            run_command(['codesign'] + CODE_SIGN_OPTS + [identity, bin])
+        run_command(['codesign'] + CODE_SIGN_OPTS + [identity, path])
+    except subprocess.CalledProcessError:
         print('Code signing failed.')
         exit(1)
     print('Code signing successfully complete.')
