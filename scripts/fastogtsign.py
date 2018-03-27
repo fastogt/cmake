@@ -57,7 +57,7 @@ def is_probably_binary(path):
 
 
 def is_definitely_binary(path):
-    return b'Mach-O' in sp.check_output(['file', '--brief', path])
+    return b'Mach-O' in subprocess.check_output(['file', '--brief', path])
 
 
 def get_signing_path(path):
@@ -89,8 +89,8 @@ def code_sign_nested_macosx(identity, path):
         print("No signable binaries found.")
         return False
     try:
-        for bin in signables:
-            run_command(['codesign'] + CODE_SIGN_OPTS + [identity, bin])
+        for sign in signables:
+            run_command(['codesign'] + CODE_SIGN_OPTS + [identity, sign])
         run_command(['codesign'] + CODE_SIGN_OPTS + [identity, path])
     except subprocess.CalledProcessError:
         print('Code signing failed.')
@@ -99,7 +99,7 @@ def code_sign_nested_macosx(identity, path):
 
 
 def main():
-    if (len(sys.argv) != 3):
+    if len(sys.argv) != 3:
         print('Usage: %s signing_identity app_path' % os.path.basename(__file__))
         exit(1)
     cs_identity, app_path = sys.argv[1:]
