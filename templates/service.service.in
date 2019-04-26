@@ -1,13 +1,12 @@
 [Unit]
 Description=@DESCRIPTION@
-After=redis.service
+After=network.target network-online.target
 
 [Service]
 Type=forking
 PermissionsStartOnly=true
 PIDFile=@PIDFILE_PATH@
 ExecStartPre=-/bin/mkdir @RUN_DIR_PATH@
-ExecStartPre=-/bin/touch @PIDFILE_PATH@
 ExecStartPre=-/bin/chown -R @USER_NAME@:@USER_GROUP@ @RUN_DIR_PATH@ @PIDFILE_PATH@
 ExecStart=@EXECUTABLE_PATH@ --daemon
 ExecStop=@EXECUTABLE_PATH@ --stop
