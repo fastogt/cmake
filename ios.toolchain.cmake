@@ -443,6 +443,7 @@ set(UNIX TRUE CACHE BOOL "")
 set(APPLE TRUE CACHE BOOL "")
 set(IOS TRUE CACHE BOOL "")
 set(CMAKE_AR ar CACHE FILEPATH "" FORCE)
+set(CMAKE_STRIP strip CACHE FILEPATH "" FORCE)
 set(CMAKE_RANLIB ranlib CACHE FILEPATH "" FORCE)
 # Set the architectures for which to build.
 set(CMAKE_OSX_ARCHITECTURES ${ARCHS} CACHE STRING "Build architecture for iOS")
