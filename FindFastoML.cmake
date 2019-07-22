@@ -20,7 +20,7 @@ FIND_PATH(FASTOML_GST_INCLUDE_DIRS NAMES fastoml/gst/config.h
 )
 
 FIND_LIBRARY(FASTOML_GST_LIBRARY NAMES fastoml_backends
- HINTS /usr /usr/local /opt PATH_SUFFIXES gstreamer-1.0
+ HINTS /usr /usr/local /opt
 )
 
 IF (FASTOML_GST_INCLUDE_DIRS AND FASTOML_GST_LIBRARY)
