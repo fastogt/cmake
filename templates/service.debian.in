@@ -25,8 +25,8 @@ case "$1" in
   start)
 	echo -n "Starting $NAME... "
 	mkdir -p $RUNDIR
-	touch $PIDFILE
-	chown $USER:$GROUP $RUNDIR $PIDFILE
+  #touch $PIDFILE
+  chown $USER:$GROUP $RUNDIR #$PIDFILE
 	chmod 755 $RUNDIR
 
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --name $NAME --chuid $USER:$GROUP --startas $DAEMON -- $DAEMON_ARGS
