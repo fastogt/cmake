@@ -4,7 +4,7 @@
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
-# Default-Stop:	     0 1 6
+# Default-Stop:       0 1 6
 ### END INIT INFO
 
 NAME=@SERVICE_NAME_EXE@
@@ -23,54 +23,54 @@ GROUP=@USER_GROUP@
 
 case "$1" in
   start)
-	echo -n "Starting $NAME... "
-	mkdir -p $RUNDIR
+  echo -n "Starting $NAME... "
+  mkdir -p $RUNDIR
   #touch $PIDFILE
   chown $USER:$GROUP $RUNDIR #$PIDFILE
-	chmod 755 $RUNDIR
+  chmod 755 $RUNDIR
 
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --name $NAME --chuid $USER:$GROUP --startas $DAEMON -- $DAEMON_ARGS
-	case "$?" in
-		0) echo "OK" ;;
-		1) echo "already running" ;;
-		*) echo "Failed"; exit 1 ;;
-	esac
-	;;
+  start-stop-daemon --start --quiet --pidfile $PIDFILE --name $NAME --chuid $USER:$GROUP --startas $DAEMON -- $DAEMON_ARGS
+  case "$?" in
+    0) echo "OK" ;;
+    1) echo "already running" ;;
+    *) echo "Failed"; exit 1 ;;
+  esac
+  ;;
   stop)
-	if [ ! -f $PIDFILE ]
-	then 
-		echo "$PIDFILE does not exists, process is not running"	
-	else
-		echo "Stopping $NAME... "
-		$DAEMON $STOP_ARGS
-	fi
-	;;
+  if [ ! -f $PIDFILE ]
+  then
+    echo "$PIDFILE does not exists, process is not running"
+  else
+    echo "Stopping $NAME... "
+    $DAEMON $STOP_ARGS
+  fi
+  ;;
   status)
-	start-stop-daemon --status --pidfile $PIDFILE --name $NAME
-	case "$?" in
-		0) echo "$NAME is running" ;;
-		1) echo "$NAME is not running but $PIDFILE exists" ;;
-		3) echo "$NAME is not running" ;;
-		4) echo "Unable to determine $NAME status" ;;
-	esac
-	;;
+  start-stop-daemon --status --pidfile $PIDFILE --name $NAME
+  case "$?" in
+    0) echo "$NAME is running" ;;
+    1) echo "$NAME is not running but $PIDFILE exists" ;;
+    3) echo "$NAME is not running" ;;
+    4) echo "Unable to determine $NAME status" ;;
+  esac
+  ;;
   reload|force-reload)
-	if [ ! -f $PIDFILE ]
-	then 
-		echo "$PIDFILE does not exists, process is not running"	
-	else
-		echo "Reloading $NAME... "
-		$DAEMON $RELOAD_ARGS
-	fi
-	;;
+  if [ ! -f $PIDFILE ]
+  then
+    echo "$PIDFILE does not exists, process is not running"
+  else
+    echo "Reloading $NAME... "
+    $DAEMON $RELOAD_ARGS
+  fi
+  ;;
   restart|force-reload)
-	${0} stop
-	${0} start
-	;;
+  ${0} stop
+  ${0} start
+  ;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload}" >&2
-	exit 3
-	;;
+  echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload}" >&2
+  exit 3
+  ;;
 esac
 
 exit 0
