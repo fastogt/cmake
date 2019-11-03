@@ -13,6 +13,7 @@ ExecStop=@EXECUTABLE_PATH@ --stop
 ExecStopPost=-/bin/rm -f @PIDFILE_PATH@
 User=@USER_NAME@
 Group=@USER_GROUP@
+LimitNOFILE=8912
 
 [Install]
 WantedBy=multi-user.target
