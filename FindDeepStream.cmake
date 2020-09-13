@@ -39,4 +39,4 @@ if (DeepStream_FOUND)
 	endif()
 endif()
 
-mark_as_advanced(DeepStream_INCLUDE_DIR DeepStream_LIBRARY)
+mark_as_advanced(DeepStream_INCLUDE_DIR DeepStream_LIBRARY DeepStream_META_LIBRARY DeepStream_GST_META_LIBRARY)
