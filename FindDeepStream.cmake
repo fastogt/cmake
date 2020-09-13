@@ -6,6 +6,8 @@ file(GLOB DEEPSTREAM_VERSIONED_DIRS "${DEEPSTREAM_SDK_PATH}/deepstream-*")
 find_path(DeepStream_INCLUDE_DIR nvdsinfer.h HINTS ${DEEPSTREAM_VERSIONED_DIRS} PATH_SUFFIXES "sources/includes")
 
 find_library(DeepStream_LIBRARY NAMES nvds_infer HINTS ${DEEPSTREAM_VERSIONED_DIRS} PATH_SUFFIXES lib)
+find_library(DeepStream_META_LIBRARY NAMES nvds_meta HINTS ${DEEPSTREAM_VERSIONED_DIRS} PATH_SUFFIXES lib)
+find_library(DeepStream_GST_META_LIBRARY NAMES nvdsgst_meta HINTS ${DEEPSTREAM_VERSIONED_DIRS} PATH_SUFFIXES lib)
 
 if(DeepStream_INCLUDE_DIR AND EXISTS "${DeepStream_INCLUDE_DIR}/nvds_version.h")
 	file(STRINGS "${DeepStream_INCLUDE_DIR}/nvds_version.h" deepstream_version_strs REGEX "^#define NVDS_VERSION.*")
@@ -23,11 +25,11 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(DeepStream REQUIRED_VARS DeepStream_INCLUDE_DIR DeepStream_LIBRARY VERSION_VAR DeepStream_VERSION_STRING)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(DeepStream REQUIRED_VARS DeepStream_INCLUDE_DIR DeepStream_LIBRARY DeepStream_META_LIBRARY DeepStream_GST_META_LIBRARY VERSION_VAR DeepStream_VERSION_STRING)
 
 if (DeepStream_FOUND)
 	set(DeepStream_INCLUDE_DIRS ${DeepStream_INCLUDE_DIR})
-	set(DeepStream_LIBRARIES ${DeepStream_LIBRARY})
+	set(DeepStream_LIBRARIES ${DeepStream_LIBRARY} ${DeepStream_META_LIBRARY} ${DeepStream_GST_META_LIBRARY})
 
 	if (NOT TARGET DeepStream::DeepStream)
 		add_library(DeepStream::DeepStream UNKNOWN IMPORTED)
