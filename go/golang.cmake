@@ -119,3 +119,7 @@ function(add_go_executable NAME)
 
   add_custom_target(${NAME} ALL DEPENDS ${OUTPUT_DIR}/.timestamp ${ARGN})
 endfunction(add_go_executable)
+
+INCLUDE(../projecthelper)
+PROJECT_GET_GIT_VERSION(PROJECT_VERSION_GIT)
+MATH(EXPR PROJECT_VERSION_NUMBER "(${PROJECT_VERSION_MAJOR}<<24)|(${PROJECT_VERSION_MINOR}<<16)|(${PROJECT_VERSION_PATCH}<<8)|(${PROJECT_VERSION_TWEAK})")
