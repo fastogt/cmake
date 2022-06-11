@@ -38,7 +38,7 @@ endif()
 
 mark_as_advanced(CMAKE_GO_COMPILER)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakeGOCompiler.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/go/CMakeGOCompiler.cmake.in
   ${CMAKE_PLATFORM_INFO_DIR}/CMakeGOCompiler.cmake @ONLY)
 
 set(CMAKE_GO_COMPILER_ENV_VAR "GO_COMPILER")
