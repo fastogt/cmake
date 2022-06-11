@@ -10,5 +10,4 @@ function(add_go_executable NAME)
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
   add_custom_target(${NAME} ALL DEPENDS ${OUTPUT_DIR}/.timestamp ${ARGN})
-  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${NAME} DESTINATION bin)
 endfunction(add_go_executable)
