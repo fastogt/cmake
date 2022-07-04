@@ -3,7 +3,7 @@ Description=@DESCRIPTION@
 After=network.target network-online.target
 
 [Service]
-Type=forking
+Type=@SERVICE_TYPE@
 PermissionsStartOnly=true
 PIDFile=@PIDFILE_PATH@
 ExecStartPre=-/bin/mkdir @RUN_DIR_PATH@
