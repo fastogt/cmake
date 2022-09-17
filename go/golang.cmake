@@ -101,16 +101,16 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_DIRECTORY})
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_DIRECTORY})
 
 function(add_go_executable NAME SOURCE OS ARCH)
-  add_custom_target(init ALL
+  add_custom_target(${NAME}_init ALL
     COMMAND env GOPATH=${GOPATH} ${CMAKE_GO_COMPILER} mod tidy
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-  add_custom_command(OUTPUT ${OUTPUT_DIR}/.timestamp 
+  add_custom_command(OUTPUT ${OUTPUT_DIR}/.${NAME}_timestamp 
     COMMAND env GOPATH=${GOPATH} GOOS=${OS} GOARCH=${ARCH} ${CMAKE_GO_COMPILER} build
     -o "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     ${CMAKE_GO_FLAGS} ${SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
-  add_custom_target(${NAME} ALL DEPENDS init ${OUTPUT_DIR}/.timestamp ${ARGN})
+  add_custom_target(${NAME} ALL DEPENDS ${NAME}_init ${OUTPUT_DIR}/.${NAME}_timestamp ${ARGN})
 endfunction(add_go_executable)
 
 INCLUDE(../projecthelper)
