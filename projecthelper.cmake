@@ -263,8 +263,19 @@ FUNCTION(SIGN_TARGET EXECUTABLE_NAME)
   INSTALL(SCRIPT ${FASTOGT_CMAKE_MODULES_DIR}/sign.cmake COMPONENT RUNTIME)
 ENDFUNCTION(SIGN_TARGET)
 
+# GEN_START_SCRIPT(file_name target_name [extra_ld_paths])
+#
+# Generates a bash launcher that resolves its own absolute path (handling
+# symlinks), prepends "../lib" to LD_LIBRARY_PATH, and exec()s the binary
+# at $SOURCE_DIR/${TARGET_NAME}. The optional 3rd argument is a colon-
+# separated list of additional library paths (used by ML builds for
+# TensorRT, VideoFX, DeepStream, etc.).
 FUNCTION(GEN_START_SCRIPT FILE_NAME TARGET_NAME)
-FILE(WRITE ${FILE_NAME} "#!/usr/bin/env bash
+  SET(EXTRA_LD_SUFFIX "")
+  IF(ARGC GREATER 2)
+    SET(EXTRA_LD_SUFFIX ":${ARGV2}")
+  ENDIF()
+  FILE(WRITE ${FILE_NAME} "#!/usr/bin/env bash
 
 SOURCE=\"\${BASH_SOURCE[0]}\"
 while [ -h \"$SOURCE\" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -275,27 +286,10 @@ done
 SOURCE_DIR=\"$( cd -P \"$( dirname \"$SOURCE\" )\" && pwd )\"
 cd $SOURCE_DIR
 
-export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:$SOURCE_DIR/../lib\"
+export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:$SOURCE_DIR/../lib${EXTRA_LD_SUFFIX}\"
 
 exec \"$SOURCE_DIR/${TARGET_NAME}\" $@")
 ENDFUNCTION(GEN_START_SCRIPT)
-
-FUNCTION(GEN_START_SCRIPT_EXTRA_LD FILE_NAME TARGET_NAME EXTRA_LD_LIBRARY_PATH)
-FILE(WRITE ${FILE_NAME} "#!/usr/bin/env bash
-
-SOURCE=\"\${BASH_SOURCE[0]}\"
-while [ -h \"$SOURCE\" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR=\"$( cd -P \"$( dirname \"$SOURCE\" )\" && pwd )\"
-  SOURCE=\"$(readlink \"$SOURCE\")\"
-  [[ $SOURCE != /* ]] && SOURCE=\"$DIR/$SOURCE\" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-SOURCE_DIR=\"$( cd -P \"$( dirname \"$SOURCE\" )\" && pwd )\"
-cd $SOURCE_DIR
-
-export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:$SOURCE_DIR/../lib:${EXTRA_LD_LIBRARY_PATH}\"
-
-exec \"$SOURCE_DIR/${TARGET_NAME}\" $@")
-ENDFUNCTION(GEN_START_SCRIPT_EXTRA_LD)
 
 FUNCTION(GEN_SERVICE_SERVICE_FILE SCRIPT_GEN_PATH SERVICE_NAME SERVICE_NAME_EXE SERVICE_TYPE EXECUTABLE_PATH RUN_DIR_PATH PIDFILE_PATH USER_NAME USER_GROUP DESCRIPTION)
   SET(FASTOGT_CMAKE_MODULES_DIR ${CMAKE_SOURCE_DIR}/cmake)
